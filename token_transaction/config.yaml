@@ -1,0 +1,16 @@
+
+
+transmitters:
+  - private_key: ""
+    address: "..."
+  # - private_key: "..." 
+  #   address: "..."     
+  # - private_key: "..." 
+  #   address: "..."     
+
+receivers:
+  - address: "..."
+  # - address: "..."
+  # - address: "..."
+
+transaction_amount: 10000000

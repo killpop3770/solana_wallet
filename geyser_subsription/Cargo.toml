@@ -16,3 +16,7 @@ tonic = { version = "0.12.3", features = ["tls"] }
 prost = "0.13.4"
 tokio-stream = "0.1.14"
 openssl-sys = { version = "0.9.104", features = ["vendored"] }
+prost-types = "0.13.4"
+
+[build-dependencies]
+tonic-build = "0.12.3"

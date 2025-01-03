@@ -1,0 +1,18 @@
+[package]
+name = "geyser_subsription"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.79"
+bs58 = "0.5.1"
+futures-util = "0.3.31"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_yml = "0.0.12"
+solana-client = "2.1.7"
+solana-sdk = "2.1.7"
+tokio = { version = "1.36.0", features = ["full"] }
+tonic = { version = "0.12.3", features = ["tls"] }
+prost = "0.13.4"
+tokio-stream = "0.1.14"
+openssl-sys = { version = "0.9.104", features = ["vendored"] }

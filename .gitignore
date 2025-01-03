@@ -1,7 +1,16 @@
 /target
 /src
 /Cargo.lock
+/.idea/
+
 /token_transaction/target
 /token_transaction/Cargo.lock
+/token_transaction/.idea/
+
 /wallet_balance/target
 /wallet_balance/Cargo.lock
+/wallet_balance/.idea/
+
+/geyser_subscription/target
+/geyser_subscription/Cargo.lock
+/geyser_subscription/.idea/

@@ -1,16 +1,6 @@
-
-
 transmitters:
-  - private_key: ""
-    address: "..."
-  # - private_key: "..." 
-  #   address: "..."     
-  # - private_key: "..." 
-  #   address: "..."     
-
+  - private_key: "2Fv84CzbN54ikTEu1XjnDJ3P9habGgR5j3xHHVp8TsFaeEMMsggdmY5NhoQNw5dyNMWHeUvimVm1dMVwHhyCj1Vo"
+    address: "8UsTkupEk2EpfTjW93LqZi2wMq3Yn3LqY78Yu5mh3mFT"
 receivers:
-  - address: "..."
-  # - address: "..."
-  # - address: "..."
-
+  - "83astBRguLMdt2h5U1Tpdq5tjFoJ6noeGwaY3mDLVcri"
 transaction_amount: 10000000

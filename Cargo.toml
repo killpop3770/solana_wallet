@@ -1,6 +1,2 @@
-[package]
-name = "solana_wallet"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
+[workspace]
+members = [ "geyser_subsription","token_transaction", "wallet_balance"]

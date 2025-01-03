@@ -1,4 +1,5 @@
 use std::{fs::File, io::Read, time::Instant};
+use std::str::FromStr;
 
 use anyhow::{Context, Result};
 use bs58;
@@ -8,7 +9,7 @@ use rand::Rng;
 use reqwest::Client;
 use serde::Deserialize;
 use solana_sdk::{
-    instruction::Instruction, message::Message, pubkey::Pubkey, signature::Keypair, signer::Signer,
+    instruction::Instruction, message::Message, pubkey::Pubkey, signature::Keypair,
     transaction::Transaction,
 };
 use tokio::task::JoinHandle;
@@ -22,7 +23,7 @@ struct Config {
     transaction_amount: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct TransmitterConfig {
     private_key: String,
     address: String,
@@ -50,9 +51,8 @@ struct TransactionStatusResponse {
 async fn load_config() -> Result<Config> {
     let mut file = File::open("config.yaml").context("Failed to open config.yaml")?;
     let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .context("Failed to read config.yaml")?;
-    let config: Config = serde_yaml::from_str(&contents).context("Failed to parse config.yaml")?;
+    file.read_to_string(&mut contents).context("Failed to read config.yaml")?;
+    let config: Config = serde_yml::from_str(&contents).context("Failed to parse config.yaml")?;
     Ok(config)
 }
 
@@ -69,7 +69,9 @@ async fn send_transaction(
     amount: u64,
 ) -> Result<String> {
     let transmitter_keypair =
-        Keypair::from_bytes(&bs58::decode(&transmitter_config.private_key).unwrap()).unwrap();
+        Keypair::from_bytes(&bs58::decode(&transmitter_config.private_key).into_vec()
+            .context("Failed to decode private key from Base58")?)
+            .context("Failed to create Keypair from bytes")?;
     let receiver_pubkey = Pubkey::from_str(receiver_address).unwrap();
     let transmitter_pubkey = Pubkey::from_str(&transmitter_config.address).unwrap();
 
@@ -130,6 +132,8 @@ async fn get_recent_blockhash(client: &Client) -> Result<solana_sdk::hash::Hash>
         .await
         .context("Failed to parse getRecentBlockhash JSON response")?;
 
+    println!("{:?}", rpc_response);
+
     let blockhash_string = rpc_response
         .result
         .get("value")
@@ -182,17 +186,17 @@ async fn main() -> Result<()> {
 
     let mut transactions: Vec<JoinHandle<Result<(String, Instant, DateTime<Utc>)>>> = Vec::new();
 
-    for sender_config in config.transmitters.iter() {
+    for transmitter_config in config.transmitters.into_iter() {
         for recipient_address in config.receivers.iter() {
             let client = client.clone();
-            let sender_config = sender_config.clone();
+            let transmitter_config  = transmitter_config.clone();
             let recipient_address = recipient_address.clone();
             let fut = tokio::spawn(async move {
                 let start_time = Instant::now();
                 let start_utc: DateTime<Utc> = Utc::now();
 
                 let signature =
-                    send_transaction(&client, &sender_config, &recipient_address, amount).await?;
+                    send_transaction(&client, &transmitter_config, &recipient_address, amount).await?;
 
                 Ok((signature, start_time, start_utc))
             });
@@ -208,7 +212,7 @@ async fn main() -> Result<()> {
     > = Vec::new();
     for transfer in transaction_results {
         match transfer {
-            Ok(Ok((signature, start_time, start_utc))) => {
+            Ok(Ok((signature, start_time, _start_utc))) => {
                 let client = client.clone();
                 let signature_for_check = signature.clone();
 
